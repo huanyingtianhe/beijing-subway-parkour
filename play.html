@@ -332,7 +332,7 @@ kbd{border-color:var(--panel-line);background:rgba(0,240,255,.12);border-radius:
 /* ===== Floating joystick (touch): press anywhere on the left half, drag ===== */
 #joyZone{display:none}
 #app.touch #joyZone{display:block;position:absolute;left:0;top:30%;bottom:0;width:50%;pointer-events:auto;touch-action:none}
-.joy{position:absolute;width:132px;height:132px;margin:-66px 0 0 -66px;border-radius:50%;border:2px solid rgba(0,240,255,.55);background:radial-gradient(circle,rgba(0,240,255,.10),rgba(10,6,24,.35) 70%);box-shadow:0 0 18px rgba(0,240,255,.25);transition:opacity .2s}
+.joy{position:absolute;left:30px;bottom:44px;width:132px;height:132px;border-radius:50%;border:2px solid rgba(0,240,255,.55);background:radial-gradient(circle,rgba(0,240,255,.10),rgba(10,6,24,.35) 70%);box-shadow:0 0 18px rgba(0,240,255,.25);transition:opacity .2s}
 .joy.idle{opacity:.55}
 .joy-knob{position:absolute;left:50%;top:50%;width:58px;height:58px;margin:-29px 0 0 -29px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#c9fbff,#00e5f2 60%,#0090a0);box-shadow:0 0 16px rgba(0,229,242,.8);will-change:transform}
 .joy-l{position:absolute;color:rgba(234,246,255,.75);font-weight:900;font-size:.72rem;pointer-events:none;text-shadow:0 1px 3px #000}
@@ -1087,10 +1087,14 @@ const SFX={
   win(){ [523,659,784,1046,1318].forEach((f,i)=>tone(f,0,.3,'triangle',.16,i*.1)); }
 };
 // Music bed: the intro video's electro track (bgm.mp3, an 8-cycle Am–F–C–G loop).
-// Plays while you run; stops on pause, map, results and the start page; follows the mute button.
+// Plays from the first tap/key (start page, runs, results); stops on pause and the map; follows the mute button.
 const bgm=new Audio('bgm.mp3'); bgm.loop=true; bgm.volume=.38; bgm.preload='auto';
+let audioUnlocked=false;
+// browsers allow sound only after the first user gesture: start the bed on the first tap / key anywhere
+const unlockAudio=()=>{ if(audioUnlocked) return; audioUnlocked=true; if(!muted) bgm.play().catch(()=>{}); ['pointerdown','keydown'].forEach(t=>window.removeEventListener(t,unlockAudio,true)); };
+['pointerdown','keydown'].forEach(t=>window.addEventListener(t,unlockAudio,true));
 function musicTick(){
-  const want=!muted&&!G.mapOpen&&(G.state==='run'||G.state==='transfer'||G.state==='dive');
+  const want=audioUnlocked&&!muted&&!G.mapOpen&&G.state!=='paused'&&G.state!=='loading';
   if(want&&bgm.paused) bgm.play().catch(()=>{});
   else if(!want&&!bgm.paused) bgm.pause();
 }
@@ -1273,18 +1277,18 @@ window.addEventListener('keyup',e=>{ const k=e.key;
 window.addEventListener('blur',()=>{ G.keys.fwd=G.keys.back=false; });
 const tapBtn=(id,fn)=>$(id).addEventListener('pointerdown',e=>{ e.preventDefault(); fn(); });
 tapBtn('tbJump',()=>act('jump')); tapBtn('tbSlide',()=>act('slide'));
-// Floating joystick: press anywhere on the left half and drag.
+// Joystick: fixed at the bottom-left; press anywhere on the left half and drag (the knob shows the drag).
 // Left/right crosses → one lane each (repeats while held). Up/down: hold forward/back in rush hour,
 // jump/slide in the day trip. Releasing re-centres and lets go of everything.
 const JOY={id:null,ox:0,oy:0,armX:true,armY:true,repT:0,R:56};
 const joyEl=$('joy'), knob=$('joyKnob'), zone=$('joyZone');
-function joyRest(){ const r=zone.getBoundingClientRect(); joyEl.style.left='96px'; joyEl.style.top=(r.height-110)+'px'; joyEl.classList.add('idle'); knob.style.transform=''; }
+function joyRest(){ joyEl.classList.add('idle'); knob.style.transform=''; }
 function joyLabels(){ $('joyUp').textContent=BR.on?'前进':'跳'; $('joyDn').textContent=BR.on?'后退':'滑铲'; }
 function joyRelease(){ JOY.id=null; G.keys.fwd=G.keys.back=false; JOY.armX=JOY.armY=true; joyRest(); }
 zone.addEventListener('pointerdown',e=>{
   if(JOY.id!==null) return; e.preventDefault(); zone.setPointerCapture(e.pointerId);
   const r=zone.getBoundingClientRect(); JOY.id=e.pointerId; JOY.ox=e.clientX-r.left; JOY.oy=e.clientY-r.top;
-  joyEl.style.left=JOY.ox+'px'; joyEl.style.top=JOY.oy+'px'; joyEl.classList.remove('idle'); joyLabels();
+  joyEl.classList.remove('idle'); joyLabels();
 });
 zone.addEventListener('pointermove',e=>{
   if(e.pointerId!==JOY.id) return; e.preventDefault();
@@ -1332,7 +1336,7 @@ function adaptQuality(dt){
 }
 let baseFov=62;
 function resize(){ const w=window.innerWidth,h=window.innerHeight; baseFov=w/h<.9?80:62; renderer.setSize(w,h,false); if(composer){ composer.setPixelRatio(renderScale); composer.setSize(w,h); } camera.aspect=w/h; camera.updateProjectionMatrix(); sizeMini(); }
-window.addEventListener('resize',()=>{ resize(); if(TOUCH&&JOY.id===null) joyRest(); });
+window.addEventListener('resize',resize);
 const P=new THREE.Vector3(), T=new THREE.Vector3(), SIDE=new THREE.Vector3();
 function placePlayer(){
   frame(G.line,G.s,G.dir,P,T); sideOf(T,SIDE);
