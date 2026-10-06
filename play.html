@@ -392,15 +392,15 @@ kbd{border-color:var(--panel-line);background:rgba(0,240,255,.12);border-radius:
     <div class="card">
       <div class="eyebrow">BEIJING SUBWAY · PARKOUR</div>
       <h1>北京地铁跑酷<span>PICK A STATION · RUN</span></h1>
-      <p id="introCopy">选一个起点，跳进线路图开跑。跳过路障、滑过闸杆、躲开迎面驶来的列车。到了换乘站，按数字键选一条线和方向，飞身跳过去。每吃 30 个金币加一条命。</p>
+      <p id="introCopy">末班车开走后，线路进入夜间检修。选一个起点跳进线网：跳过施工护栏、滑过检修龙门架、躲开迎面开来的工程车。到了换乘站，按数字键选一条线和方向，飞身跳过去。每吃 30 个金币加一条命。</p>
       <div class="eyebrow" id="lineCount"></div>
       <div class="modetabs" role="tablist" aria-label="模式">
         <button id="modeFree" role="tab" type="button" aria-selected="true">地铁一日游</button>
-        <button id="modeBr" role="tab" type="button" aria-selected="false">勇闯早高峰 · 20 人</button>
+        <button id="modeBr" role="tab" type="button" aria-selected="false">抢末班车 · 20 人</button>
       </div>
       <div class="brintro" id="brIntro" hidden>
-        <p>20 名跑者从随机车站出发。安全区围绕某个车站不断缩小，圈外线路停运、持续掉血。看小地图和左上角的箭头往安全区跑，靠近对手时按 F 出拳，活到最后就赢。</p>
-        <ul><li><kbd>W</kbd>/<kbd>↑</kbd> 按住前进，<kbd>S</kbd>/<kbd>↓</kbd> 按住后退，松手就停</li><li><kbd>A</kbd>/<kbd>D</kbd> 换道，<kbd>空格</kbd> 跳，<kbd>C</kbd> 滑铲</li><li><kbd>R</kbd> 原地掉头</li><li><kbd>F</kbd> 出拳：对手进入攻击范围时，它脚下出现绿圈、底部提示变绿，这时按 F 必中，三拳淘汰</li><li>对手头顶出现红色「!」、脚下红圈扩大 = 0.6 秒后出拳。它只打它所在的那条车道：换道、跳、滑铲、后退或躲到掩体后都能躲开</li><li>换乘提示会标出「靠近安全区」的方向</li><li>撞到障碍不掉血，但会被挡住：矮路障跳过去、闸杆滑铲钻过去、安检机和列车换道绕开</li><li>躲在安检机或列车后面，对手打不到你；矮路障要滑铲蹲下才挡得住</li><li>吃金币（¥）：每 10 个回 10 HP；满血时变成护盾，最多 30，挨打先扣护盾</li><li>绿十字医疗包回 30 HP</li></ul>
+        <p>深夜，全城地铁一段段停运，最后一班车就要发车。20 个人从随机车站出发抢末班车：还在运营的区域（安全区）不断缩小，圈外已经停运检修，待着会掉血。看小地图和左上角的箭头往安全区跑，靠近对手时出拳，活到最后就能挤上车。</p>
+        <ul><li><kbd>W</kbd>/<kbd>↑</kbd> 按住前进，<kbd>S</kbd>/<kbd>↓</kbd> 按住后退，松手就停</li><li><kbd>A</kbd>/<kbd>D</kbd> 换道，<kbd>空格</kbd> 跳，<kbd>C</kbd> 滑铲</li><li><kbd>R</kbd> 原地掉头</li><li><kbd>F</kbd> 出拳：对手进入攻击范围时，它脚下出现绿圈、底部提示变绿，这时按 F 必中，三拳淘汰</li><li>对手头顶出现红色「!」、脚下红圈扩大 = 0.6 秒后出拳。它只打它所在的那条车道：换道、跳、滑铲、后退或躲到掩体后都能躲开</li><li>换乘提示会标出「靠近安全区」的方向</li><li>撞到检修设备不掉血，但会被挡住：施工护栏跳过去、检修龙门架滑铲钻过去、检修车和列车换道绕开</li><li>躲在检修车或列车后面，对手打不到你；施工护栏要滑铲蹲下才挡得住</li><li>吃金币（¥）：每 10 个回 10 HP；满血时变成护盾，最多 30，挨打先扣护盾</li><li>绿十字医疗包回 30 HP</li></ul>
       </div>
       <div id="freePick">
       <fieldset class="startpick">
@@ -415,7 +415,7 @@ kbd{border-color:var(--panel-line);background:rgba(0,240,255,.12);border-radius:
       <details class="howto"><summary>操作说明</summary>
         <div class="controls">
           <div><kbd>R</kbd></div><div>原地掉头</div>
-          <div><kbd>F</kbd></div><div>攻击（早高峰模式）</div>
+          <div><kbd>F</kbd></div><div>攻击（抢末班车模式）</div>
           <div><kbd>←</kbd><kbd>→</kbd></div><div>换道（手机：左右滑）</div>
           <div><kbd>↑</kbd><kbd>空格</kbd></div><div>跳跃（上滑）</div>
           <div><kbd>↓</kbd></div><div>滑铲（下滑）</div>
@@ -874,10 +874,6 @@ function applyPose(tg,k){ JOINTS.forEach(([o,ax],i)=>{ o.rotation[ax]+=(tg[i]-o.
 function texHazard(){ const c=makeCanvas(128,32), g=c.getContext('2d'); g.fillStyle='#fcee0a'; g.fillRect(0,0,128,32); g.fillStyle='#08080c'; for(let x=-32;x<160;x+=24){ g.beginPath(); g.moveTo(x,32); g.lineTo(x+12,32); g.lineTo(x+28,0); g.lineTo(x+16,0); g.fill(); } return new THREE.CanvasTexture(c); }
 function texText(bg,fg,text,w,h,size){ const c=makeCanvas(w,h), g=c.getContext('2d'); g.fillStyle=bg; g.fillRect(0,0,w,h); g.strokeStyle=fg; g.lineWidth=Math.max(4,w/40); g.strokeRect(g.lineWidth/2,g.lineWidth/2,w-g.lineWidth,h-g.lineWidth); g.fillStyle=fg; g.font="900 "+size+"px 'Noto Sans SC', sans-serif"; g.textAlign='center'; g.textBaseline='middle'; g.fillText(text,w/2,h/2+2); return new THREE.CanvasTexture(c); }
 const OB={
-  barrierGeo:new THREE.BoxGeometry(2.8,1.2,.45), barrierMat:(()=>{ const t=texHazard(); return new THREE.MeshLambertMaterial({map:t,emissiveMap:t,emissive:0xffffff,emissiveIntensity:.9}); })(),
-  postGeo:new THREE.BoxGeometry(.22,3.4,.22), postMat:new THREE.MeshLambertMaterial({color:0x2a2f38}),
-  gateGeo:new THREE.BoxGeometry(3,1.4,.4), gateMat:(()=>{ const t=texText('#1a0016','#ff2bd6','低头',256,128,72); return new THREE.MeshLambertMaterial({map:t,emissiveMap:t,emissive:0xffffff,emissiveIntensity:.9}); })(),
-  blockGeo:new THREE.BoxGeometry(2.6,3.4,2.6), blockMat:(()=>{ const t=texText('#001a20','#00f0ff','安检',256,256,96); return new THREE.MeshLambertMaterial({map:t,emissiveMap:t,emissive:0xffffff,emissiveIntensity:.9}); })(),
   coinGeo:(()=>{ const g=new THREE.CylinderGeometry(.55,.55,.12,32); g.rotateX(Math.PI/2); return g; })(),
   coinMat:(()=>{ const c=makeCanvas(128,128), g=c.getContext('2d');
     // unlit and bright so it reads on the dark neon deck; the ¥ and rim stay dark enough to keep it crisp
@@ -895,6 +891,76 @@ const OB={
     g.strokeStyle='#fcee0a'; g.lineWidth=14; for(let y=-40;y<300;y+=56){ g.beginPath(); g.moveTo(8,y+40); g.lineTo(64,y); g.lineTo(120,y+40); g.stroke(); }
     g.fillStyle='#00f0ff'; g.fillRect(0,0,8,256); g.fillRect(120,0,8,256); return new THREE.CanvasTexture(c); })(); return new THREE.MeshLambertMaterial({map:t,emissiveMap:t,emissive:0xffffff,emissiveIntensity:.9}); })()
 };
+// ---- Night maintenance kit: after the last train the line is handed to the works crews ----
+// 施工护栏 (jump), 检修龙门架 (slide under), 轨道检修车 (go round / cover), 工程轨道车 (oncoming).
+// Built at full size; addOb scales every obstacle by A like the runner.
+const WK={};
+{
+  const lit=t=>new THREE.MeshLambertMaterial({map:t,emissiveMap:t,emissive:0xffffff,emissiveIntensity:.85});
+  const cv=(w,h,draw)=>{ const c=makeCanvas(w,h), g=c.getContext('2d'); draw(g,w,h); return new THREE.CanvasTexture(c); };
+  const stripes=(g,w,h,a='#fcb500',b='#111')=>{ g.fillStyle=a; g.fillRect(0,0,w,h); g.fillStyle=b; for(let x=-h;x<w+h;x+=h*1.2){ g.beginPath(); g.moveTo(x,h); g.lineTo(x+h*.6,h); g.lineTo(x+h*1.2,0); g.lineTo(x+h*.6,0); g.fill(); } };
+  WK.steel=new THREE.MeshLambertMaterial({color:0x3a4150,emissive:0x0c1018});
+  WK.dark=new THREE.MeshLambertMaterial({color:0x15171d});
+  WK.amber=new THREE.MeshBasicMaterial({color:0xffae1a});
+  WK.lamp=new THREE.MeshBasicMaterial({color:0xfff6d0});
+  WK.rail=lit(cv(256,32,(g,w,h)=>stripes(g,w,h)));
+  WK.beam=lit(cv(512,96,(g,w,h)=>{ stripes(g,w,h,'#ff7a1a','#111'); g.fillStyle='#111'; g.fillRect(96,14,320,68); g.strokeStyle='#ff7a1a'; g.lineWidth=4; g.strokeRect(96,14,320,68);
+    g.fillStyle='#fff'; g.font="900 46px 'Noto Sans SC', sans-serif"; g.textAlign='center'; g.textBaseline='middle'; g.fillText('检修作业',256,50); }));
+  WK.cartSide=lit(cv(256,256,(g,w,h)=>{ g.fillStyle='#f2b705'; g.fillRect(0,0,w,h); g.fillStyle='#1a1c22'; g.fillRect(24,30,208,92);
+    g.fillStyle='rgba(150,235,255,.85)'; g.fillRect(34,40,88,72); g.fillRect(134,40,88,72);
+    stripes(g,w,40,'#f2b705','#111'); g.save(); g.translate(0,210); stripes(g,w,46,'#f2b705','#111'); g.restore();
+    g.fillStyle='#111'; g.font="900 54px 'Noto Sans SC', sans-serif"; g.textAlign='center'; g.textBaseline='middle'; g.fillText('检修',128,166); }));
+  WK.cartBox=lit(cv(128,64,(g,w,h)=>{ g.fillStyle='#ff7a1a'; g.fillRect(0,0,w,h); g.strokeStyle='#5a2a00'; g.lineWidth=4; for(let x=16;x<w;x+=28){ g.beginPath(); g.moveTo(x,6); g.lineTo(x,h-6); g.stroke(); } }));
+  WK.workSide=lit(cv(512,128,(g,w,h)=>{ g.fillStyle='#f2b705'; g.fillRect(0,0,w,h); g.fillStyle='#1a1c22'; g.fillRect(0,16,120,60); g.fillStyle='rgba(150,235,255,.85)'; g.fillRect(12,24,96,44);
+    g.save(); g.translate(0,96); stripes(g,w,32,'#f2b705','#111'); g.restore();
+    g.fillStyle='#111'; g.font="900 40px 'Noto Sans SC', sans-serif"; g.textAlign='left'; g.textBaseline='middle'; g.fillText('工程车 · 夜间检修',140,48); }));
+  WK.workFront=lit(cv(256,256,(g,w,h)=>{ g.fillStyle='#f2b705'; g.fillRect(0,0,w,h); g.fillStyle='#0b0e14'; g.fillRect(30,34,196,92);
+    g.fillStyle='#fff6d0'; [62,194].forEach(x=>{ g.beginPath(); g.arc(x,176,18,0,7); g.fill(); });
+    g.save(); g.translate(0,212); stripes(g,w,44,'#f2b705','#111'); g.restore(); }));
+  WK.workTop=new THREE.MeshLambertMaterial({color:0x8a7a3a,emissive:0x1a1600});
+}
+function buildBarrier(){
+  const g=new THREE.Group();
+  [-1.3,1.3].forEach(x=>{ const p=new THREE.Mesh(new THREE.BoxGeometry(.14,1.2,.14),WK.steel); p.position.set(x,.6,0); g.add(p);
+    const f=new THREE.Mesh(new THREE.BoxGeometry(.5,.06,.5),WK.dark); f.position.set(x,.03,0); g.add(f); });
+  const top=new THREE.Mesh(new THREE.BoxGeometry(2.8,.3,.08),WK.rail); top.position.y=1.03; g.add(top);
+  const mid=new THREE.Mesh(new THREE.BoxGeometry(2.8,.22,.08),WK.rail); mid.position.y=.52; g.add(mid);
+  const lamp=new THREE.Mesh(new THREE.SphereGeometry(.1,10,8),WK.amber); lamp.position.set(-1.3,1.28,0); g.add(lamp);
+  return g;
+}
+function buildGantry(){
+  const g=new THREE.Group();
+  [-1.5,1.5].forEach(x=>{ const p=new THREE.Mesh(new THREE.BoxGeometry(.2,3.5,.2),WK.steel); p.position.set(x,1.75,0); g.add(p);
+    const brace=new THREE.Mesh(new THREE.BoxGeometry(.08,1.4,.08),WK.steel); brace.position.set(x*.82,2.85,0); brace.rotation.z=x>0?.6:-.6; g.add(brace); });
+  const beam=new THREE.Mesh(new THREE.BoxGeometry(3.2,.62,.34),WK.beam); beam.position.y=2.16; g.add(beam);
+  const truss=new THREE.Mesh(new THREE.BoxGeometry(3.2,.16,.28),WK.steel); truss.position.y=3.42; g.add(truss);
+  [-.8,.8].forEach(x=>{ const l=new THREE.Mesh(new THREE.BoxGeometry(.34,.14,.24),WK.lamp); l.position.set(x,1.8,0); g.add(l); });
+  return g;
+}
+function buildCart(){
+  const g=new THREE.Group();
+  const chassis=new THREE.Mesh(new THREE.BoxGeometry(2.4,.4,2.6),WK.dark); chassis.position.y=.5; g.add(chassis);
+  const wg=new THREE.CylinderGeometry(.3,.3,.18,14); wg.rotateZ(Math.PI/2);
+  [[-1.1,-.85],[1.1,-.85],[-1.1,.85],[1.1,.85]].forEach(([x,z])=>{ const w=new THREE.Mesh(wg,WK.steel); w.position.set(x,.3,z); g.add(w); });
+  const cab=new THREE.Mesh(new THREE.BoxGeometry(2.3,2.2,1.3),[WK.cartSide,WK.cartSide,WK.workTop,WK.dark,WK.cartSide,WK.cartSide]); cab.position.set(0,1.8,-.6); g.add(cab);
+  const box=new THREE.Mesh(new THREE.BoxGeometry(2.2,.8,1.1),WK.cartBox); box.position.set(0,1.1,.7); g.add(box);
+  const bea=new THREE.Mesh(new THREE.CylinderGeometry(.14,.14,.22,12),WK.amber); bea.position.set(0,3.02,-.6); g.add(bea);
+  return g;
+}
+const WCAR=10.4, WPITCH=11;
+function buildWorkTrain(n){
+  const grp=new THREE.Group(), total=n*WPITCH-(WPITCH-WCAR);
+  for(let i=0;i<n;i++){
+    const z=-total/2+WCAR/2+i*WPITCH;
+    const body=new THREE.Mesh(new THREE.BoxGeometry(2.9,3.3,WCAR),[WK.workSide,WK.workSide,WK.workTop,WK.dark,i===n-1?WK.workFront:WK.dark,i===0?WK.workFront:WK.dark]); body.position.set(0,2.2,z); grp.add(body);
+    const roof=new THREE.Mesh(new THREE.BoxGeometry(2.7,.2,WCAR-.4),WK.workTop); roof.position.set(0,3.95,z); grp.add(roof);
+    [-1,1].forEach(sd=>{ const b=new THREE.Mesh(OB.bogieGeo,OB.bogieMat); b.position.set(0,.3,z+sd*(WCAR/2-2)); grp.add(b);
+      const bea=new THREE.Mesh(new THREE.CylinderGeometry(.16,.16,.24,12),WK.amber); bea.position.set(sd*.9,4.12,z+sd*(WCAR/2-.8)); grp.add(bea); });
+    if(i<n-1){ const gw=new THREE.Mesh(OB.gangGeo,OB.bogieMat); gw.position.set(0,1.8,z+WCAR/2+.3); grp.add(gw); }
+  }
+  return {grp,hl:total/2};
+}
+
 // Beijing-style B-type cars: silver body, dark window band, line-colour stripe, four door pairs a side,
 // driver cabs with a destination board at both ends, bogies and gangways between cars.
 const CAR=17.4, PITCH=18, ROOF0=4.05, ROOF=ROOF0*A, trainKits={};
@@ -945,7 +1011,9 @@ function buildRamp(){
   const g=new THREE.Group(), m=new THREE.Mesh(OB.rampGeo,OB.rampMat);
   m.rotation.x=-Math.atan2(ROOF0,12); m.position.y=ROOF0/2-.08; g.add(m);
   [0,3,5.4].forEach(z=>{ const h=ROOF0*(z+6)/12; [-1.3,1.3].forEach(x=>{ const l=new THREE.Mesh(OB.legGeo,OB.bogieMat); l.scale.y=h; l.position.set(x,h/2,z); g.add(l); }); });
-  return g;
+  [-1.42,1.42].forEach(x=>{ const r=new THREE.Mesh(new THREE.BoxGeometry(.08,.08,Math.hypot(12,ROOF0)),WK.rail); r.rotation.x=-Math.atan2(ROOF0,12); r.position.set(x,ROOF0/2+.95,0); g.add(r);
+    [-5,0,5].forEach(z=>{ const h=ROOF0*(z+6)/12, p=new THREE.Mesh(new THREE.BoxGeometry(.06,1,.06),WK.steel); p.position.set(x,h+.5,z); g.add(p); }); });
+  return g;  // 检修平台斜梯
 }
 
 // ---------- Game state ----------
@@ -963,10 +1031,10 @@ const _q=new THREE.Vector3(), _qt=new THREE.Vector3(), _qs=new THREE.Vector3();
 function placeMesh(mesh,L,s,laneX,y){ frame(L,s,G.dir,_q,_qt); sideOf(_qt,_qs); mesh.position.copy(_q).addScaledVector(_qs,laneX); mesh.position.y+=y; mesh.lookAt(mesh.position.clone().add(_qt)); }
 function addOb(type,s,lane,y){
   const L=G.line; let mesh, hl=.5;
-  if(type==='barrier'){ mesh=new THREE.Mesh(OB.barrierGeo,OB.barrierMat); placeMesh(mesh,L,s,lane*LANE,.6*A); hl=.45*A; }
-  else if(type==='gate'){ mesh=new THREE.Group(); const b=new THREE.Mesh(OB.gateGeo,OB.gateMat); b.position.y=2.55; mesh.add(b); [-1.4,1.4].forEach(x=>{ const p=new THREE.Mesh(OB.postGeo,OB.postMat); p.position.set(x,1.7,0); mesh.add(p); }); placeMesh(mesh,L,s,lane*LANE,0); hl=.45*A; }
-  else if(type==='block'){ mesh=new THREE.Mesh(OB.blockGeo,OB.blockMat); placeMesh(mesh,L,s,lane*LANE,1.7*A); hl=1.3*A; }
-  else if(type==='train'||type==='parked'){ const t=buildTrain(L,y||2); mesh=t.grp; placeMesh(mesh,L,s,lane*LANE,0); hl=t.hl*A; }
+  if(type==='barrier'){ mesh=buildBarrier(); placeMesh(mesh,L,s,lane*LANE,0); hl=.45*A; }
+  else if(type==='gate'){ mesh=buildGantry(); placeMesh(mesh,L,s,lane*LANE,0); hl=.45*A; }
+  else if(type==='block'){ mesh=buildCart(); placeMesh(mesh,L,s,lane*LANE,0); hl=1.3*A; }
+  else if(type==='train'||type==='parked'){ const t=type==='train'? buildWorkTrain(y||2) : buildTrain(L,y||2); mesh=t.grp; placeMesh(mesh,L,s,lane*LANE,0); hl=t.hl*A; }
   else if(type==='ramp'){ mesh=buildRamp(); placeMesh(mesh,L,s,lane*LANE,0); hl=6*A; }
   else if(type==='medkit'){ mesh=new THREE.Group(); const b=new THREE.Mesh(OB.medGeo,OB.medMat); mesh.add(b); placeMesh(mesh,L,s,lane*LANE,y); hl=1.2*A; }
   else { mesh=new THREE.Mesh(OB.coinGeo,OB.coinMat); placeMesh(mesh,L,s,lane*LANE,y); hl=1.2*A; }
@@ -1162,14 +1230,14 @@ function startRun(){
   else { L=LINE_BY_ID[pick.line]; st=L.stations[pick.idx]; dir=pick.dir; s0=st.s+dir*6; }
   G.route=[st.name+' · '+L.name]; setLine(L,s0,dir);
   renderLives(); G.atkCD=0; G.punchT=0; G.revCD=0;
-  if(mode==='br'){ brStart(); setText($('overEyebrow'),'勇闯早高峰'); } else { brCleanup(); setText($('overEyebrow'),'本次运营结束'); restoreFreeStats(); }
+  if(mode==='br'){ brStart(); setText($('overEyebrow'),'抢末班车'); } else { brCleanup(); setText($('overEyebrow'),'本次运营结束'); restoreFreeStats(); }
   if(TOUCH) joyLabels();
   const p=frame(G.line,G.s,G.dir,new THREE.Vector3(),new THREE.Vector3()), t=_qt.clone();
   frame(G.line,G.s,G.dir,p,t);
   G.dive={t:0,dur:3,fromPos:camera.position.clone(),fromLook,toPos:p.clone().addScaledVector(t,-CAM_BACK).add(new THREE.Vector3(0,CAM_UP,0)),toLook:p.clone().addScaledVector(t,CAM_AHEAD).add(new THREE.Vector3(0,.7,0))};
   setTheme('cyber');
   G.state='dive'; LINES.forEach(L=>L.badges.forEach(b=>b.visible=false)); beacon.visible=false;
-  if(mode==='br') toast('早高峰来了！按住 W / ↑ 前进', '你在 '+st.name+' · 安全区：'+zoneTarget().name+' 附近');
+  if(mode==='br') toast('末班车就要开了！'+(TOUCH?'上推摇杆前进':'按住 W / ↑ 前进'), '你在 '+st.name+' · 安全区：'+zoneTarget().name+' 附近');
   else toast(st.name+' → 进站', L.name+' · '+(L.loop?loopWord(L,dir):'开往 '+terminusName(L,dir)));
 }
 function setLine(L,s,dir){
@@ -1456,7 +1524,7 @@ function tick(){
 
 // Battle royale: obstacles are solid walls, not damage. Push the runner back to the obstacle's edge
 // (or undo the lane change if they slid into it from the side).
-const BLOCK_TIP={barrier:'矮路障挡住了 · 空格跳过去',gate:'闸杆挡住了 · C 滑铲钻过去',block:'安检机挡住了 · 换道绕开',train:'列车挡住了 · 换道，或从坡道跑上车顶',ramp:'坡道侧面过不去 · 从坡道正面跑上去'};
+const BLOCK_TIP={barrier:'施工护栏挡住了 · 空格跳过去',gate:'检修龙门架挡住了 · C 滑铲钻过去',block:'检修车挡住了 · 换道绕开',train:'车挡住了 · 换道，或从检修斜梯跑上车顶',ramp:'斜梯侧面过不去 · 从正面跑上去'};
 function blockPlayer(o,d,prev){
   const lim=o.hl+.6*A;
   if(Math.abs(prev)<lim-.05){ if(G.lastLane!=null&&G.lastLane!==G.laneIdx) G.laneIdx=G.lastLane; }
@@ -1476,7 +1544,7 @@ function coverFor(attS,tgtS,tgtLane,crouched){
   }
   return null;
 }
-const COVER_NAME={block:'安检机',train:'列车',barrier:'路障'};
+const COVER_NAME={block:'检修车',train:'车厢',barrier:'护栏'};
 function floorAt(x){
   let f=0;
   for(const o of G.obstacles){
@@ -1543,7 +1611,7 @@ function step(dt){
     else if(o.type==='ramp'){ const off=-d; hit=G.y<ROOF*(off+o.hl)/(2*o.hl)-1.2*A; }
     if(hit&&BR.on){ blockPlayer(o,d,prev); continue; }
     if(hit&&G.invuln<=0){ o.done=true; G.lives--; G.invuln=1.6; G.shake=1.2; G.speed=Math.max(26,G.speed*.8); renderLives(); SFX.hit();
-      toast(o.type==='train'?'和列车撞个正着':o.type==='ramp'?'撞到坡道侧面':o.type==='gate'?'头撞到闸杆了':o.type==='block'?'撞上安检机':'被路障绊倒', G.lives>0?'还剩 '+G.lives+' 条命':'');
+      toast(o.type==='train'?(o.vs?'和工程车撞个正着':'撞上停着的列车'):o.type==='ramp'?'撞到斜梯侧面':o.type==='gate'?'撞上检修龙门架':o.type==='block'?'撞上检修车':'被施工护栏绊倒', G.lives>0?'还剩 '+G.lives+' 条命':'');
       if(G.lives<=0){ placePlayer(); gameOver(); return; } }
   }
   generate();
@@ -1556,14 +1624,14 @@ function step(dt){
 }
 
 
-// ---------- 勇闯早高峰 (battle royale) ----------
+// ---------- 抢末班车 (battle royale): the network shuts down line by line; one last train leaves ----------
 // 20 runners (you + 19 AI) start at random stations. The safe zone (centred on a station)
 // shrinks in phases; outside it the line is "停运" and drains HP. R turns around, F attacks.
 const KM_PER_PX=(()=>{ const v=LINES.map(L=>L.kmPerUnit*K).sort((a,b)=>a-b); return v[v.length>>1]; })();
 const REACH=9, AI_REACH=4.5;
 const BR={on:false, ais:[], zone:null, kills:0, t:0, alive:0, feed:[], over:false};
 let mode='free';
-const AI_NAMES=['回龙观之王','西二旗码农','望京小哥','三里屯潮人','五道口学霸','天通苑居民','国贸白领','中关村大神','胡同串子','末班车常客','北漂小李','通州打工人','亦庄工程师','双井遛狗人','鼓楼文青','早高峰勇士','换乘达人','大兴机场旅客','地铁老司机'];
+const AI_NAMES=['回龙观之王','西二旗码农','望京小哥','三里屯潮人','五道口学霸','天通苑居民','国贸白领','中关村大神','胡同串子','末班车常客','北漂小李','通州打工人','亦庄工程师','双井遛狗人','鼓楼文青','夜跑达人','换乘达人','大兴机场旅客','地铁老司机'];
 const AI_COLORS=[0x2f80ed,0x27ae60,0x9b51e0,0xeb5757,0x00b8a9,0xf2994a,0x56ccf2,0xbb6bd9,0x6fcf97,0xf2c94c,0xe84393,0x0984e3,0x00cec9,0xfd79a8,0xa29bfe,0x55efc4,0xfab1a0,0x74b9ff,0xff7675];
 const ZONE_R=[1750,1050,680,420,250,130,50], ZONE_WAIT=[30,28,26,22,20,18], ZONE_SHRINK=[28,24,20,18,15,12], ZONE_DPS=[1,2,4,6,9,14,22];
 
@@ -1591,14 +1659,14 @@ function zoneUpdate(dt){
   const z=BR.zone;
   if(z.mode!=='final'){
     z.timer-=dt;
-    if(z.mode==='wait'&&z.timer<=0){ z.mode='shrink'; z.timer=ZONE_SHRINK[z.k]; z.from={...z.cur}; brAnnounce('停运区正在扩大！','往 '+z.next.name+' 附近跑'); SFX.alarm(); }
+    if(z.mode==='wait'&&z.timer<=0){ z.mode='shrink'; z.timer=ZONE_SHRINK[z.k]; z.from={...z.cur}; brAnnounce('又一批线路停运了！','往 '+z.next.name+' 附近跑'); SFX.alarm(); }
     else if(z.mode==='shrink'){
       const t=1-Math.max(0,z.timer)/ZONE_SHRINK[z.k];
       z.cur.x=z.from.x+(z.next.x-z.from.x)*t; z.cur.y=z.from.y+(z.next.y-z.from.y)*t; z.cur.r=z.from.r+(z.next.r-z.from.r)*t;
       if(z.timer<=0){
         z.k++; z.cur={...z.centers[z.k]};
-        if(z.k<z.centers.length-1){ z.next={...z.centers[z.k+1]}; z.mode='wait'; z.timer=ZONE_WAIT[z.k]; brAnnounce('新安全区：'+z.next.name+' 附近', ZONE_WAIT[z.k]+' 秒后开始缩圈'); }
-        else { z.mode='final'; brAnnounce('决赛圈：'+z.cur.name,'活到最后！'); }
+        if(z.k<z.centers.length-1){ z.next={...z.centers[z.k+1]}; z.mode='wait'; z.timer=ZONE_WAIT[z.k]; brAnnounce('末班车将从 '+z.next.name+' 附近发车', ZONE_WAIT[z.k]+' 秒后继续停运'); }
+        else { z.mode='final'; brAnnounce('末班车在 '+z.cur.name+' 等你','活到最后就能上车！'); }
       }
     }
   }
@@ -1913,8 +1981,8 @@ function brEnd(win,cause){
   G.state='over'; $('hud').hidden=true; $('danger').classList.remove('on');
   const rank=win?1:BR.alive; const tm=Math.floor(BR.t), mmss=Math.floor(tm/60)+':'+String(tm%60).padStart(2,'0');
   let best=99; try{ best=+localStorage.getItem('bj-br-best')||99; if(rank<best){ best=rank; localStorage.setItem('bj-br-best',rank); } }catch(e){}
-  setText($('overEyebrow'),'勇闯早高峰 · 20 人');
-  setText($('overTitle'), win?'挤上车了！今天不迟到':'第 '+rank+' 名 · 被挤下车');
+  setText($('overEyebrow'),'抢末班车 · 20 人');
+  setText($('overTitle'), win?'挤上末班车了！':'第 '+rank+' 名 · 没赶上末班车');
   const stats=[[ '#'+rank,'名次'],[BR.kills,'淘汰'],[mmss,'存活时间'],[G.km.toFixed(1),'里程 km'],[G.transfers,'换乘次数'],['#'+best,'最佳名次']];
   const box=$('overStats'); box.innerHTML=''; stats.forEach(([v,l])=>{ const d=document.createElement('div'); d.className='stat'; const b=document.createElement('b'); b.textContent=v; const sp=document.createElement('span'); sp.textContent=l; d.append(b,sp); box.append(d); });
   setText($('oRoute'), (win?'':'出局原因：'+(cause||'体力耗尽')+'。')+'路线：'+G.route.join(' → '));
@@ -2003,7 +2071,7 @@ function initModes(){
   const set=m=>{ mode=m; try{ localStorage.setItem('bj-mode',m); }catch(e){}
     $('modeFree').setAttribute('aria-selected',String(m==='free')); $('modeBr').setAttribute('aria-selected',String(m==='br'));
     $('freePick').hidden=m!=='free'; $('brIntro').hidden=m!=='br'; $('introCopy').hidden=m!=='free';
-    if(m==='br') setText($('btnStart'),'开挤！（20 人）'); else renderPick();
+    if(m==='br') setText($('btnStart'),'开抢！（20 人）'); else renderPick();
     beacon.visible=m==='free'; };
   $('modeFree').addEventListener('click',()=>set('free')); $('modeBr').addEventListener('click',()=>set('br'));
   set(mode);
