@@ -695,6 +695,7 @@ function startRun(){
   G.route=[st.name+' · '+L.name]; setLine(L,s0,dir);
   renderLives(); G.atkCD=0; G.punchT=0; G.revCD=0;
   if(mode==='br'){ brStart(); setText($('overEyebrow'),'勇闯早高峰'); } else { brCleanup(); setText($('overEyebrow'),'本次运营结束'); restoreFreeStats(); }
+  if(TOUCH) joyLabels();
   const p=frame(G.line,G.s,G.dir,new THREE.Vector3(),new THREE.Vector3()), t=_qt.clone();
   frame(G.line,G.s,G.dir,p,t);
   G.dive={t:0,dur:3,fromPos:camera.position.clone(),fromLook,toPos:p.clone().addScaledVector(t,-CAM_BACK).add(new THREE.Vector3(0,CAM_UP,0)),toLook:p.clone().addScaledVector(t,CAM_AHEAD).add(new THREE.Vector3(0,.7,0))};
@@ -806,11 +807,37 @@ window.addEventListener('keyup',e=>{ const k=e.key;
   if(k==='ArrowUp'||k==='w'||k==='W') G.keys.fwd=false;
   if(k==='ArrowDown'||k==='s'||k==='S') G.keys.back=false; });
 window.addEventListener('blur',()=>{ G.keys.fwd=G.keys.back=false; });
-function holdBtn(id,key){ const b=$(id), on=e=>{ e.preventDefault(); G.keys[key]=true; }, off=()=>{ G.keys[key]=false; };
-  b.addEventListener('pointerdown',on); ['pointerup','pointerleave','pointercancel'].forEach(t=>b.addEventListener(t,off)); }
-holdBtn('tbFwd','fwd'); holdBtn('tbBack','back');
 const tapBtn=(id,fn)=>$(id).addEventListener('pointerdown',e=>{ e.preventDefault(); fn(); });
-tapBtn('tbLeft',()=>act('left')); tapBtn('tbRight',()=>act('right')); tapBtn('tbJump',()=>act('jump')); tapBtn('tbSlide',()=>act('slide'));
+tapBtn('tbJump',()=>act('jump')); tapBtn('tbSlide',()=>act('slide'));
+// Floating joystick: press anywhere on the left half and drag.
+// Left/right crosses → one lane each (repeats while held). Up/down: hold forward/back in rush hour,
+// jump/slide in the day trip. Releasing re-centres and lets go of everything.
+const JOY={id:null,ox:0,oy:0,armX:true,armY:true,repT:0,R:56};
+const joyEl=$('joy'), knob=$('joyKnob'), zone=$('joyZone');
+function joyRest(){ const r=zone.getBoundingClientRect(); joyEl.style.left='96px'; joyEl.style.top=(r.height-110)+'px'; joyEl.classList.add('idle'); knob.style.transform=''; }
+function joyLabels(){ $('joyUp').textContent=BR.on?'前进':'跳'; $('joyDn').textContent=BR.on?'后退':'滑铲'; }
+function joyRelease(){ JOY.id=null; G.keys.fwd=G.keys.back=false; JOY.armX=JOY.armY=true; joyRest(); }
+zone.addEventListener('pointerdown',e=>{
+  if(JOY.id!==null) return; e.preventDefault(); zone.setPointerCapture(e.pointerId);
+  const r=zone.getBoundingClientRect(); JOY.id=e.pointerId; JOY.ox=e.clientX-r.left; JOY.oy=e.clientY-r.top;
+  joyEl.style.left=JOY.ox+'px'; joyEl.style.top=JOY.oy+'px'; joyEl.classList.remove('idle'); joyLabels();
+});
+zone.addEventListener('pointermove',e=>{
+  if(e.pointerId!==JOY.id) return; e.preventDefault();
+  const r=zone.getBoundingClientRect(); let dx=e.clientX-r.left-JOY.ox, dy=e.clientY-r.top-JOY.oy;
+  const len=Math.hypot(dx,dy); if(len>JOY.R){ dx*=JOY.R/len; dy*=JOY.R/len; }
+  knob.style.transform='translate('+dx.toFixed(0)+'px,'+dy.toFixed(0)+'px)';
+  const nx=dx/JOY.R, ny=dy/JOY.R;
+  if(JOY.armX&&Math.abs(nx)>.55){ act(nx<0?'left':'right'); JOY.armX=false; JOY.repT=G.t+.42; }
+  else if(!JOY.armX&&Math.abs(nx)<.3) JOY.armX=true;
+  JOY.dirX=Math.abs(nx)>.55?Math.sign(nx):0;
+  if(BR.on){ G.keys.fwd=ny<-.42; G.keys.back=ny>.42; }
+  else if(JOY.armY&&Math.abs(ny)>.55){ act(ny<0?'jump':'slide'); JOY.armY=false; }
+  else if(!JOY.armY&&Math.abs(ny)<.3) JOY.armY=true;
+});
+['pointerup','pointercancel','lostpointercapture'].forEach(t=>zone.addEventListener(t,e=>{ if(e.pointerId===JOY.id) joyRelease(); }));
+function joyTick(){ if(JOY.id!==null&&!JOY.armX&&JOY.dirX&&G.t>JOY.repT){ act(JOY.dirX<0?'left':'right'); JOY.repT=G.t+.38; } }
+if(TOUCH) requestAnimationFrame(()=>{ joyRest(); joyLabels(); });
 let touch0=null;
 canvas.addEventListener('touchstart',e=>{ const t=e.changedTouches[0]; touch0={x:t.clientX,y:t.clientY}; },{passive:true});
 canvas.addEventListener('touchend',e=>{ if(!touch0) return; const t=e.changedTouches[0], dx=t.clientX-touch0.x, dy=t.clientY-touch0.y; touch0=null;
@@ -841,7 +868,7 @@ function adaptQuality(dt){
 }
 let baseFov=62;
 function resize(){ const w=window.innerWidth,h=window.innerHeight; baseFov=w/h<.9?80:62; renderer.setSize(w,h,false); if(composer){ composer.setPixelRatio(renderScale); composer.setSize(w,h); } camera.aspect=w/h; camera.updateProjectionMatrix(); sizeMini(); }
-window.addEventListener('resize',resize);
+window.addEventListener('resize',()=>{ resize(); if(TOUCH&&JOY.id===null) joyRest(); });
 const P=new THREE.Vector3(), T=new THREE.Vector3(), SIDE=new THREE.Vector3();
 function placePlayer(){
   frame(G.line,G.s,G.dir,P,T); sideOf(T,SIDE);
@@ -922,7 +949,7 @@ function tick(){
   const rawDt=clock.getDelta(), dt=Math.min(rawDt,.05); G.t+=dt; adaptQuality(rawDt);
   if(toastTimer>0){ toastTimer-=dt; if(toastTimer<=0) hud.toast.classList.remove('on'); }
   if(arriveTimer>0){ arriveTimer-=dt; if(arriveTimer<=0){ $('nextPlate').classList.remove('flash'); setText($('arrived'),''); } }
-  musicTick();
+  musicTick(); joyTick();
   G.obstacles.forEach(o=>{ if(o.done) return; if(o.type==='medkit') o.mesh.rotation.y+=dt*1.5; else if(o.type==='coin'){ o.spin=(o.spin??Math.random()*6)+dt*3; o.mesh.rotation.y=o.baseRY+Math.sin(o.spin)*.55; } });
   for(let i=pops.length-1;i>=0;i--){ const p=pops[i]; p.t+=dt; p.m.scale.setScalar(1+p.t*3.5); p.m.position.y+=dt*7; p.m.rotation.y+=dt*24; if(p.t>.18){ scene.remove(p.m); pops.splice(i,1); } }
   if(G.state==='intro'||G.state==='loading'){
