@@ -27,6 +27,7 @@
 ## 文件
 
 - `game.js` —— 游戏代码（线路数据位置留有 `/*__DATA__*/` 占位）
+- `bgm.mp3` —— 背景音乐（与介绍视频同一段电子乐，64 秒无缝循环）
 - `lines.json` —— 线路与车站数据（示意坐标、颜色、经纬度），来自 [高德地铁图](https://map.amap.com/subway/index.html)
 - `page.html` —— 页面与样式模板，`build.py` 会把 `game.js` 和数据内联进来
 - `index.html` / `play.html` —— 构建产物，可直接打开的完整网页（内容相同）

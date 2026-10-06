@@ -1040,7 +1040,7 @@ function drawMini(){
 }
 
 // ---------- Audio ----------
-let actx=null, muted=false, musicNext=0, musicStep=0, noiseBuf=null;
+let actx=null, muted=false, noiseBuf=null;
 let master=null;
 function ensureAudio(){ if(actx) return; try{ actx=new (window.AudioContext||window.webkitAudioContext)();
   const comp=actx.createDynamicsCompressor(); comp.threshold.value=-14; comp.ratio.value=4; master=actx.createGain(); master.gain.value=.9; master.connect(comp).connect(actx.destination); }catch(e){ actx=null; } }
@@ -1065,15 +1065,13 @@ const SFX={
   dodge(){ tone(500,1100,.16,'triangle',.14); },
   win(){ [523,659,784,1046,1318].forEach((f,i)=>tone(f,0,.3,'triangle',.16,i*.1)); }
 };
-const BASS=[55,55,65.4,55,73.4,55,65.4,49];
+// Music bed: the intro video's electro track (bgm.mp3, an 8-cycle Am–F–C–G loop).
+// Plays while you run; stops on pause, map, results and the start page; follows the mute button.
+const bgm=new Audio('bgm.mp3'); bgm.loop=true; bgm.volume=.38; bgm.preload='auto';
 function musicTick(){
-  if(!actx||muted||G.state!=='run') return;
-  const spb=60/132/2; if(musicNext<actx.currentTime) musicNext=actx.currentTime+.05;
-  while(musicNext<actx.currentTime+.15){ const st=musicStep%16;
-    if(st%4===0) tone(140,45,.18,'sine',.16,0,musicNext);
-    if(st%4===2) noise(.05,.05,7000,musicNext);
-    if(st%2===0) tone(BASS[(st/2)%8],0,spb*.9,'sawtooth',.035,0,musicNext);
-    musicNext+=spb; musicStep++; }
+  const want=!muted&&!G.mapOpen&&(G.state==='run'||G.state==='transfer'||G.state==='dive');
+  if(want&&bgm.paused) bgm.play().catch(()=>{});
+  else if(!want&&!bgm.paused) bgm.pause();
 }
 
 // ---------- Flow ----------
@@ -1129,6 +1127,7 @@ function backToIntro(){
 }
 function startRun(){
   ensureAudio(); if(actx&&actx.state==='suspended') actx.resume();
+  if(!muted) bgm.play().catch(()=>{});   // start inside the click so mobile browsers allow playback
   const fromLook=(G.state==='intro'?overviewLook:camLook).clone();
   $('intro').hidden=true; $('over').hidden=true; $('hud').hidden=false; sizeMini();
   Object.assign(G,{coinBank:0,shield:0,tipShown:{},bumpT:0,coverMsgT:0,lastLane:null,vel:0,keys:{fwd:false,back:false},floor:0,onGround:true,lives:3,score:0,coins:0,km:0,wdist:0,speed:28,laneIdx:0,laneX:0,y:0,vy:0,slideT:0,invuln:0,transfers:0,passed:0,shake:0,transferAnim:null});
@@ -1963,7 +1962,7 @@ function initModes(){
 // ---------- Boot ----------
 setText($('lineCount'),LINES.length+' 条线路 · '+Object.keys(STATION_LINES).length+' 座车站');
 if(G.best) setText($('bestLine'),'最高分 '+G.best+' · 线路数据来自高德地铁图（map.amap.com/subway）。');
-if(location.hash==='#debug') window.__bj={BR,brEnd,brUpdate,zoneTarget,reverseRun,playerAttack,G,LINE_BY_ID,setLine,roofRun,addOb,coinRow,clearObstacles,act};
+if(location.hash==='#debug') window.__bj={bgm,BR,brEnd,brUpdate,zoneTarget,reverseRun,playerAttack,G,LINE_BY_ID,setLine,roofRun,addOb,coinRow,clearObstacles,act};
 resize(); tick();
 initPicker();
 initModes();
