@@ -814,12 +814,12 @@ window.addEventListener('blur',()=>{ G.keys.fwd=G.keys.back=false; });
 const tapBtn=(id,fn)=>$(id).addEventListener('pointerdown',e=>{ e.preventDefault(); fn(); });
 tapBtn('tbJump',()=>act('jump')); tapBtn('tbSlide',()=>act('slide'));
 // Joystick: fixed at the bottom-left; press anywhere on the left half and drag (the knob shows the drag).
-// Left/right crosses → one lane each (repeats while held). Up/down: hold forward/back in rush hour,
-// jump/slide in the day trip. Releasing re-centres and lets go of everything.
+// Left/right crosses → one lane each (repeats while held). Up/down holds forward/back in rush hour only;
+// jump and slide live on the right-hand buttons in both modes. Releasing re-centres and lets go of everything.
 const JOY={id:null,ox:0,oy:0,armX:true,armY:true,repT:0,R:56};
 const joyEl=$('joy'), knob=$('joyKnob'), zone=$('joyZone');
 function joyRest(){ joyEl.classList.add('idle'); knob.style.transform=''; }
-function joyLabels(){ $('joyUp').textContent=BR.on?'前进':'跳'; $('joyDn').textContent=BR.on?'后退':'滑铲'; }
+function joyLabels(){ $('joyUp').textContent=BR.on?'前进':''; $('joyDn').textContent=BR.on?'后退':''; }
 function joyRelease(){ JOY.id=null; G.keys.fwd=G.keys.back=false; JOY.armX=JOY.armY=true; joyRest(); }
 zone.addEventListener('pointerdown',e=>{
   if(JOY.id!==null) return; e.preventDefault(); zone.setPointerCapture(e.pointerId);
@@ -836,8 +836,6 @@ zone.addEventListener('pointermove',e=>{
   else if(!JOY.armX&&Math.abs(nx)<.3) JOY.armX=true;
   JOY.dirX=Math.abs(nx)>.55?Math.sign(nx):0;
   if(BR.on){ G.keys.fwd=ny<-.42; G.keys.back=ny>.42; }
-  else if(JOY.armY&&Math.abs(ny)>.55){ act(ny<0?'jump':'slide'); JOY.armY=false; }
-  else if(!JOY.armY&&Math.abs(ny)<.3) JOY.armY=true;
 });
 ['pointerup','pointercancel','lostpointercapture'].forEach(t=>zone.addEventListener(t,e=>{ if(e.pointerId===JOY.id) joyRelease(); }));
 function joyTick(){ if(JOY.id!==null&&!JOY.armX&&JOY.dirX&&G.t>JOY.repT){ act(JOY.dirX<0?'left':'right'); JOY.repT=G.t+.38; } }
