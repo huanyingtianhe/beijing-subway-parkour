@@ -427,50 +427,66 @@ const OB={
     g.strokeStyle='#fcee0a'; g.lineWidth=14; for(let y=-40;y<300;y+=56){ g.beginPath(); g.moveTo(8,y+40); g.lineTo(64,y); g.lineTo(120,y+40); g.stroke(); }
     g.fillStyle='#00f0ff'; g.fillRect(0,0,8,256); g.fillRect(120,0,8,256); return new THREE.CanvasTexture(c); })(); return new THREE.MeshLambertMaterial({map:t,emissiveMap:t,emissive:0xffffff,emissiveIntensity:.9}); })()
 };
-// ---- Night maintenance kit: after the last train the line is handed to the works crews ----
+// ---- Night maintenance kit (cyberpunk): dark alloy bodies, neon tube edges, holographic panels ----
 // 施工护栏 (jump), 检修龙门架 (slide under), 轨道检修车 (go round / cover), 工程轨道车 (oncoming).
 // Built at full size; addOb scales every obstacle by A like the runner.
 const WK={};
 {
-  const lit=t=>new THREE.MeshLambertMaterial({map:t,emissiveMap:t,emissive:0xffffff,emissiveIntensity:.85});
+  const lit=(t,k=.95)=>new THREE.MeshLambertMaterial({map:t,emissiveMap:t,emissive:0xffffff,emissiveIntensity:k});
   const cv=(w,h,draw)=>{ const c=makeCanvas(w,h), g=c.getContext('2d'); draw(g,w,h); return new THREE.CanvasTexture(c); };
-  const stripes=(g,w,h,a='#fcb500',b='#111')=>{ g.fillStyle=a; g.fillRect(0,0,w,h); g.fillStyle=b; for(let x=-h;x<w+h;x+=h*1.2){ g.beginPath(); g.moveTo(x,h); g.lineTo(x+h*.6,h); g.lineTo(x+h*1.2,0); g.lineTo(x+h*.6,0); g.fill(); } };
-  WK.steel=new THREE.MeshLambertMaterial({color:0x3a4150,emissive:0x0c1018});
-  WK.dark=new THREE.MeshLambertMaterial({color:0x15171d});
-  WK.amber=new THREE.MeshBasicMaterial({color:0xffae1a});
-  WK.lamp=new THREE.MeshBasicMaterial({color:0xfff6d0});
-  WK.rail=lit(cv(256,32,(g,w,h)=>stripes(g,w,h)));
-  WK.beam=lit(cv(512,96,(g,w,h)=>{ stripes(g,w,h,'#ff7a1a','#111'); g.fillStyle='#111'; g.fillRect(96,14,320,68); g.strokeStyle='#ff7a1a'; g.lineWidth=4; g.strokeRect(96,14,320,68);
-    g.fillStyle='#fff'; g.font="900 46px 'Noto Sans SC', sans-serif"; g.textAlign='center'; g.textBaseline='middle'; g.fillText('检修作业',256,50); }));
-  WK.cartSide=lit(cv(256,256,(g,w,h)=>{ g.fillStyle='#f2b705'; g.fillRect(0,0,w,h); g.fillStyle='#1a1c22'; g.fillRect(24,30,208,92);
-    g.fillStyle='rgba(150,235,255,.85)'; g.fillRect(34,40,88,72); g.fillRect(134,40,88,72);
-    stripes(g,w,40,'#f2b705','#111'); g.save(); g.translate(0,210); stripes(g,w,46,'#f2b705','#111'); g.restore();
-    g.fillStyle='#111'; g.font="900 54px 'Noto Sans SC', sans-serif"; g.textAlign='center'; g.textBaseline='middle'; g.fillText('检修',128,166); }));
-  WK.cartBox=lit(cv(128,64,(g,w,h)=>{ g.fillStyle='#ff7a1a'; g.fillRect(0,0,w,h); g.strokeStyle='#5a2a00'; g.lineWidth=4; for(let x=16;x<w;x+=28){ g.beginPath(); g.moveTo(x,6); g.lineTo(x,h-6); g.stroke(); } }));
-  WK.workSide=lit(cv(512,128,(g,w,h)=>{ g.fillStyle='#f2b705'; g.fillRect(0,0,w,h); g.fillStyle='#1a1c22'; g.fillRect(0,16,120,60); g.fillStyle='rgba(150,235,255,.85)'; g.fillRect(12,24,96,44);
-    g.save(); g.translate(0,96); stripes(g,w,32,'#f2b705','#111'); g.restore();
-    g.fillStyle='#111'; g.font="900 40px 'Noto Sans SC', sans-serif"; g.textAlign='left'; g.textBaseline='middle'; g.fillText('工程车 · 夜间检修',140,48); }));
-  WK.workFront=lit(cv(256,256,(g,w,h)=>{ g.fillStyle='#f2b705'; g.fillRect(0,0,w,h); g.fillStyle='#0b0e14'; g.fillRect(30,34,196,92);
-    g.fillStyle='#fff6d0'; [62,194].forEach(x=>{ g.beginPath(); g.arc(x,176,18,0,7); g.fill(); });
-    g.save(); g.translate(0,212); stripes(g,w,44,'#f2b705','#111'); g.restore(); }));
-  WK.workTop=new THREE.MeshLambertMaterial({color:0x8a7a3a,emissive:0x1a1600});
+  const stripes=(g,w,h,a,b)=>{ g.fillStyle=b; g.fillRect(0,0,w,h); g.fillStyle=a; for(let x=-h;x<w+h;x+=h*1.2){ g.beginPath(); g.moveTo(x,h); g.lineTo(x+h*.6,h); g.lineTo(x+h*1.2,0); g.lineTo(x+h*.6,0); g.fill(); } };
+  const glowText=(g,txt,x,y,size,col,align='center')=>{ g.font="900 "+size+"px 'Noto Sans SC', sans-serif"; g.textAlign=align; g.textBaseline='middle';
+    g.shadowColor=col; g.shadowBlur=size*.5; g.fillStyle=col; g.fillText(txt,x,y); g.shadowBlur=0; g.globalAlpha=.5; g.fillStyle='#fff'; g.fillText(txt,x,y); g.globalAlpha=1; };
+  WK.steel=new THREE.MeshLambertMaterial({color:0x1b1e29,emissive:0x05060c});
+  WK.dark=new THREE.MeshLambertMaterial({color:0x0d0e14});
+  WK.cyan=new THREE.MeshBasicMaterial({color:0x00f0ff});
+  WK.pink=new THREE.MeshBasicMaterial({color:0xff2bd6});
+  WK.yellow=new THREE.MeshBasicMaterial({color:0xfcee0a});
+  WK.rail=lit(cv(256,32,(g,w,h)=>stripes(g,w,h,'#fcee0a','#0a0a10')));
+  WK.holo=new THREE.MeshBasicMaterial({transparent:true,opacity:.92,depthWrite:false,side:THREE.DoubleSide,map:cv(512,128,(g,w,h)=>{
+    g.fillStyle='rgba(40,0,40,.55)'; g.fillRect(0,0,w,h); g.strokeStyle='#ff2bd6'; g.lineWidth=6; g.strokeRect(4,4,w-8,h-8);
+    g.fillStyle='rgba(255,43,214,.18)'; for(let y=10;y<h;y+=8) g.fillRect(8,y,w-16,2);
+    glowText(g,'检修作业 · 低头',256,66,56,'#ff2bd6'); })});
+  WK.cartSide=lit(cv(256,256,(g,w,h)=>{ g.fillStyle='#12141c'; g.fillRect(0,0,w,h);
+    g.fillStyle='#04060a'; g.fillRect(22,28,212,96); g.strokeStyle='#00f0ff'; g.lineWidth=5; g.strokeRect(22,28,212,96);
+    glowText(g,'检修',128,78,64,'#00f0ff');
+    g.fillStyle='#00f0ff'; g.fillRect(0,0,w,6); g.fillRect(0,h-6,w,6);
+    g.save(); g.translate(0,196); stripes(g,w,36,'#fcee0a','#0a0a10'); g.restore(); }));
+  WK.cartBox=lit(cv(128,64,(g,w,h)=>{ g.fillStyle='#161826'; g.fillRect(0,0,w,h); g.strokeStyle='#ff2bd6'; g.lineWidth=3; g.strokeRect(3,3,w-6,h-6);
+    g.fillStyle='rgba(255,43,214,.6)'; for(let x=20;x<w;x+=22) g.fillRect(x,12,8,h-24); }));
+  WK.workSide=lit(cv(512,128,(g,w,h)=>{ g.fillStyle='#12141c'; g.fillRect(0,0,w,h); g.fillStyle='rgba(150,235,255,.9)'; g.fillRect(12,22,96,46);
+    g.save(); g.translate(0,96); stripes(g,w,26,'#fcee0a','#0a0a10'); g.restore();
+    g.fillStyle='#fcee0a'; g.fillRect(0,4,w,4);
+    glowText(g,'工程车 · 夜间检修',136,48,38,'#fcee0a','left'); }));
+  WK.workFront=lit(cv(256,256,(g,w,h)=>{ g.fillStyle='#12141c'; g.fillRect(0,0,w,h); g.fillStyle='rgba(150,235,255,.85)'; g.fillRect(30,34,196,88);
+    g.strokeStyle='#fcee0a'; g.lineWidth=5; g.strokeRect(30,34,196,88);
+    g.fillStyle='#fff'; [62,194].forEach(x=>{ g.beginPath(); g.arc(x,172,18,0,7); g.fill(); });
+    g.save(); g.translate(0,214); stripes(g,w,42,'#fcee0a','#0a0a10'); g.restore(); }));
+  WK.workTop=new THREE.MeshLambertMaterial({color:0x1b1e29,emissive:0x08080c});
 }
+function tube(len,r,mat,axis){ const g=new THREE.CylinderGeometry(r,r,len,8); if(axis==='x') g.rotateZ(Math.PI/2); else if(axis==='z') g.rotateX(Math.PI/2); return new THREE.Mesh(g,mat); }
 function buildBarrier(){
   const g=new THREE.Group();
   [-1.3,1.3].forEach(x=>{ const p=new THREE.Mesh(new THREE.BoxGeometry(.14,1.2,.14),WK.steel); p.position.set(x,.6,0); g.add(p);
-    const f=new THREE.Mesh(new THREE.BoxGeometry(.5,.06,.5),WK.dark); f.position.set(x,.03,0); g.add(f); });
+    const f=new THREE.Mesh(new THREE.BoxGeometry(.5,.06,.5),WK.dark); f.position.set(x,.03,0); g.add(f);
+    const cap=tube(.16,.08,WK.cyan,'y'); cap.position.set(x,1.24,0); g.add(cap); });
   const top=new THREE.Mesh(new THREE.BoxGeometry(2.8,.3,.08),WK.rail); top.position.y=1.03; g.add(top);
   const mid=new THREE.Mesh(new THREE.BoxGeometry(2.8,.22,.08),WK.rail); mid.position.y=.52; g.add(mid);
-  const lamp=new THREE.Mesh(new THREE.SphereGeometry(.1,10,8),WK.amber); lamp.position.set(-1.3,1.28,0); g.add(lamp);
+  [1.2,.33].forEach(y=>{ const t=tube(2.8,.035,WK.cyan,'x'); t.position.set(0,y,.06); g.add(t); });
+  const lamp=new THREE.Mesh(new THREE.SphereGeometry(.12,10,8),WK.pink); lamp.position.set(-1.3,1.4,0); g.add(lamp);
   return g;
 }
 function buildGantry(){
   const g=new THREE.Group();
   [-1.5,1.5].forEach(x=>{ const p=new THREE.Mesh(new THREE.BoxGeometry(.2,3.5,.2),WK.steel); p.position.set(x,1.75,0); g.add(p);
+    const n=tube(3.5,.04,WK.pink,'y'); n.position.set(x+(x>0?-.12:.12),1.75,.12); g.add(n);
     const brace=new THREE.Mesh(new THREE.BoxGeometry(.08,1.4,.08),WK.steel); brace.position.set(x*.82,2.85,0); brace.rotation.z=x>0?.6:-.6; g.add(brace); });
-  const beam=new THREE.Mesh(new THREE.BoxGeometry(3.2,.62,.34),WK.beam); beam.position.y=2.16; g.add(beam);
-  const truss=new THREE.Mesh(new THREE.BoxGeometry(3.2,.16,.28),WK.steel); truss.position.y=3.42; g.add(truss);
-  [-.8,.8].forEach(x=>{ const l=new THREE.Mesh(new THREE.BoxGeometry(.34,.14,.24),WK.lamp); l.position.set(x,1.8,0); g.add(l); });
+  const frame=new THREE.Mesh(new THREE.BoxGeometry(3.2,.7,.2),WK.steel); frame.position.y=2.16; g.add(frame);
+  const holo=new THREE.Mesh(new THREE.PlaneGeometry(3.0,.6),WK.holo); holo.position.set(0,2.16,.12); g.add(holo);
+  const holoB=holo.clone(); holoB.position.z=-.12; holoB.rotation.y=Math.PI; g.add(holoB);
+  const under=tube(3.0,.04,WK.cyan,'x'); under.position.set(0,1.8,0); g.add(under);
+  const topT=tube(3.2,.05,WK.pink,'x'); topT.position.set(0,3.46,0); g.add(topT);
+  const truss=new THREE.Mesh(new THREE.BoxGeometry(3.2,.14,.24),WK.steel); truss.position.y=3.36; g.add(truss);
   return g;
 }
 function buildCart(){
@@ -478,9 +494,11 @@ function buildCart(){
   const chassis=new THREE.Mesh(new THREE.BoxGeometry(2.4,.4,2.6),WK.dark); chassis.position.y=.5; g.add(chassis);
   const wg=new THREE.CylinderGeometry(.3,.3,.18,14); wg.rotateZ(Math.PI/2);
   [[-1.1,-.85],[1.1,-.85],[-1.1,.85],[1.1,.85]].forEach(([x,z])=>{ const w=new THREE.Mesh(wg,WK.steel); w.position.set(x,.3,z); g.add(w); });
+  [-1.22,1.22].forEach(x=>{ const t=tube(2.6,.04,WK.cyan,'z'); t.position.set(x,.7,0); g.add(t); });
   const cab=new THREE.Mesh(new THREE.BoxGeometry(2.3,2.2,1.3),[WK.cartSide,WK.cartSide,WK.workTop,WK.dark,WK.cartSide,WK.cartSide]); cab.position.set(0,1.8,-.6); g.add(cab);
+  [[-1.16,2.92],[1.16,2.92]].forEach(([x,y])=>{ const t=tube(1.3,.035,WK.cyan,'z'); t.position.set(x,y,-.6); g.add(t); });
   const box=new THREE.Mesh(new THREE.BoxGeometry(2.2,.8,1.1),WK.cartBox); box.position.set(0,1.1,.7); g.add(box);
-  const bea=new THREE.Mesh(new THREE.CylinderGeometry(.14,.14,.22,12),WK.amber); bea.position.set(0,3.02,-.6); g.add(bea);
+  const bea=new THREE.Mesh(new THREE.CylinderGeometry(.14,.14,.22,12),WK.pink); bea.position.set(0,3.02,-.6); g.add(bea);
   return g;
 }
 const WCAR=10.4, WPITCH=11;
@@ -490,8 +508,9 @@ function buildWorkTrain(n){
     const z=-total/2+WCAR/2+i*WPITCH;
     const body=new THREE.Mesh(new THREE.BoxGeometry(2.9,3.3,WCAR),[WK.workSide,WK.workSide,WK.workTop,WK.dark,i===n-1?WK.workFront:WK.dark,i===0?WK.workFront:WK.dark]); body.position.set(0,2.2,z); grp.add(body);
     const roof=new THREE.Mesh(new THREE.BoxGeometry(2.7,.2,WCAR-.4),WK.workTop); roof.position.set(0,3.95,z); grp.add(roof);
+    [-1.47,1.47].forEach(x=>{ const t=tube(WCAR,.04,WK.yellow,'z'); t.position.set(x,3.86,z); grp.add(t); });
     [-1,1].forEach(sd=>{ const b=new THREE.Mesh(OB.bogieGeo,OB.bogieMat); b.position.set(0,.3,z+sd*(WCAR/2-2)); grp.add(b);
-      const bea=new THREE.Mesh(new THREE.CylinderGeometry(.16,.16,.24,12),WK.amber); bea.position.set(sd*.9,4.12,z+sd*(WCAR/2-.8)); grp.add(bea); });
+      const bea=new THREE.Mesh(new THREE.CylinderGeometry(.16,.16,.24,12),sd>0?WK.yellow:WK.pink); bea.position.set(sd*.9,4.12,z+sd*(WCAR/2-.8)); grp.add(bea); });
     if(i<n-1){ const gw=new THREE.Mesh(OB.gangGeo,OB.bogieMat); gw.position.set(0,1.8,z+WCAR/2+.3); grp.add(gw); }
   }
   return {grp,hl:total/2};
@@ -547,7 +566,7 @@ function buildRamp(){
   const g=new THREE.Group(), m=new THREE.Mesh(OB.rampGeo,OB.rampMat);
   m.rotation.x=-Math.atan2(ROOF0,12); m.position.y=ROOF0/2-.08; g.add(m);
   [0,3,5.4].forEach(z=>{ const h=ROOF0*(z+6)/12; [-1.3,1.3].forEach(x=>{ const l=new THREE.Mesh(OB.legGeo,OB.bogieMat); l.scale.y=h; l.position.set(x,h/2,z); g.add(l); }); });
-  [-1.42,1.42].forEach(x=>{ const r=new THREE.Mesh(new THREE.BoxGeometry(.08,.08,Math.hypot(12,ROOF0)),WK.rail); r.rotation.x=-Math.atan2(ROOF0,12); r.position.set(x,ROOF0/2+.95,0); g.add(r);
+  [-1.42,1.42].forEach(x=>{ const r=tube(Math.hypot(12,ROOF0),.05,WK.cyan,'z'); r.rotation.x=-Math.atan2(ROOF0,12); r.position.set(x,ROOF0/2+.95,0); g.add(r);
     [-5,0,5].forEach(z=>{ const h=ROOF0*(z+6)/12, p=new THREE.Mesh(new THREE.BoxGeometry(.06,1,.06),WK.steel); p.position.set(x,h+.5,z); g.add(p); }); });
   return g;  // 检修平台斜梯
 }
