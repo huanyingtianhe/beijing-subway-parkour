@@ -4,7 +4,9 @@
 
 ## 怎么玩
 
-双击 `play.html` 用浏览器打开（需要联网加载 Three.js）。
+在线玩：https://beijing-subway-parkour.vercel.app
+
+本地玩：双击 `index.html`（或 `play.html`）用浏览器打开（需要联网加载 Three.js）。
 
 两种模式：
 
@@ -26,15 +28,15 @@
 
 - `game.js` —— 游戏代码（线路数据位置留有 `/*__DATA__*/` 占位）
 - `lines.json` —— 线路与车站数据（示意坐标、颜色、经纬度），来自 [高德地铁图](https://map.amap.com/subway/index.html)
-- `index.html` —— 页面与样式，`build.py` 会把 `game.js` 和数据内联进来
-- `play.html` —— 构建产物，可直接打开的完整网页
+- `page.html` —— 页面与样式模板，`build.py` 会把 `game.js` 和数据内联进来
+- `index.html` / `play.html` —— 构建产物，可直接打开的完整网页（内容相同）
 
-修改 `game.js` 或 `index.html` 后运行：
+修改 `game.js` 或 `page.html` 后运行：
 
 ```bash
 python build.py
 ```
 
-会重新生成 `index.html` 里的内联脚本和 `play.html`。
+会更新 `page.html` 里的内联脚本，并重新生成 `index.html` 和 `play.html`。
 
 在地址后加 `#debug` 会在页面上暴露 `window.__bj` 调试对象。
